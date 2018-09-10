@@ -1,6 +1,13 @@
 package com.googlecode.lanterna.game;
 
-import java.awt.Image;
+import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextColor.RGB;
+import com.googlecode.lanterna.graphics.BasicTextImage;
+import com.googlecode.lanterna.graphics.TextGraphics;
+import com.googlecode.lanterna.graphics.TextImage;
+
+import javax.imageio.ImageIO;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -15,10 +22,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import javax.imageio.ImageIO;
-import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.graphics.BasicTextImage;
-import com.googlecode.lanterna.graphics.TextImage;
 
 public enum TextImageIO {
 
@@ -32,12 +35,12 @@ public enum TextImageIO {
         if (textImageFile.isDirectory()) {
             // read from directory
             final BufferedInputStream glyphsStream = new BufferedInputStream(
-                            new FileInputStream(new File(textImageFile, GLYPHS)));
+                    new FileInputStream(new File(textImageFile, GLYPHS)));
             final List<String> glyphs = readGlyphs(glyphsStream);
             final BufferedImage foreground = readImage(new BufferedInputStream(
-                            new FileInputStream(new File(textImageFile, FOREGROUND))));
+                    new FileInputStream(new File(textImageFile, FOREGROUND))));
             final BufferedImage background = readImage(new BufferedInputStream(
-                            new FileInputStream(new File(textImageFile, BACKGROUND))));
+                    new FileInputStream(new File(textImageFile, BACKGROUND))));
             return read(glyphs, foreground, background);
         }
 
@@ -75,7 +78,8 @@ public enum TextImageIO {
     }
 
     private static void fillImage(final TextImage textImage, final List<String> glyphs,
-                    final Image foreground, final Image background) {
+                                  final BufferedImage foreground, final BufferedImage background) {
+        final TextGraphics textGraphics = textImage.newTextGraphics();
         for (int row = 0; row < textImage.getSize().getRows(); row++) {
             final String line = glyphs.get(row);
             for (int column = 0; column < textImage.getSize().getColumns(); column++) {
@@ -85,20 +89,28 @@ public enum TextImageIO {
                 } else {
                     glyph = line.charAt(column);
                 }
+                textGraphics.setForegroundColor(toRGB(foreground, column, row));
+                textGraphics.setBackgroundColor(toRGB(background, column, row));
+                textGraphics.putString(column, row, "" + glyph);
             }
         }
     }
 
+    private static RGB toRGB(final BufferedImage image, final int column, final int row) {
+        final Color color = new Color(image.getRGB(column, row));
+        return new RGB(color.getRed(), color.getGreen(), color.getBlue());
+    }
+
     private static TerminalSize getImageSize(final List<String> lines) {
         final int columns = lines.stream() //
-                        .map(String::length) //
-                        .max(Comparator.naturalOrder()).get();
+                .map(String::length) //
+                .max(Comparator.naturalOrder()).get();
         final int rows = lines.size();
         return new TerminalSize(columns, rows);
     }
 
-    private static TextImage read(final List<String> glyphs, final Image foreground,
-                    final Image background) throws IOException {
+    private static TextImage read(final List<String> glyphs, final BufferedImage foreground,
+                                  final BufferedImage background) throws IOException {
         final TerminalSize imageSize = getImageSize(glyphs);
         final TextImage textImage = new BasicTextImage(imageSize);
         fillImage(textImage, glyphs, foreground, background);
@@ -107,9 +119,9 @@ public enum TextImageIO {
 
     private static List<String> readGlyphs(final InputStream glyphStream) throws IOException {
         try (final BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(glyphStream, StandardCharsets.UTF_8))) {
+                new InputStreamReader(glyphStream, StandardCharsets.UTF_8))) {
             return reader.lines() //
-                            .collect(Collectors.toList());
+                    .collect(Collectors.toList());
         }
     }
 
