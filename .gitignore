@@ -1,3 +1,4 @@
 /.idea
+/src/**/*.zip
 target
 lanterna-game.iml
