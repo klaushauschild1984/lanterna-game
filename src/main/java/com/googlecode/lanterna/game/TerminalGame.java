@@ -26,6 +26,7 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
+import com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 
@@ -52,6 +53,8 @@ public class TerminalGame {
     private Render render;
     private Handler handler;
     private ActionBinding actionBinding;
+    private Font font;
+    private int fontSize = 28;
 
     public TerminalGame(final String title, final int columns, final int rows) {
         this.title = title;
@@ -72,6 +75,16 @@ public class TerminalGame {
     public TerminalGame handler(final Handler handler, final ActionBinding actionBinding) {
         this.handler = handler;
         this.actionBinding = actionBinding;
+        return this;
+    }
+
+    public TerminalGame font(final Font font) {
+        this.font = font;
+        return this;
+    }
+
+    public TerminalGame fontSize(final int fontSize) {
+        this.fontSize = fontSize;
         return this;
     }
 
@@ -177,7 +190,14 @@ public class TerminalGame {
     }
 
     private Terminal initializeTerminal() throws Exception {
-        final Font font = new Font("DejaVu Sans Mono", Font.BOLD, 28);
+        if (font == null) {
+            font = new Font("DejaVu Sans Mono", Font.BOLD, fontSize);
+        } else {
+            font = font.deriveFont(Font.BOLD, fontSize);
+        }
+        if (AWTTerminalFontConfiguration.filterMonospaced(font).length != 1) {
+            throw new IllegalArgumentException(String.format("Font %s is not mono-spaced.", font));
+        }
 
         final Terminal terminal = new DefaultTerminalFactory() //
                 .setInitialTerminalSize(new TerminalSize(columns, rows)) //
