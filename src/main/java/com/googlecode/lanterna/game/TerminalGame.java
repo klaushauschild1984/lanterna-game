@@ -1,10 +1,12 @@
 package com.googlecode.lanterna.game;
 
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.game.event.ActionBinding;
 import com.googlecode.lanterna.game.event.Event;
 import com.googlecode.lanterna.game.event.GameEvent;
 import com.googlecode.lanterna.game.event.Handler;
 import com.googlecode.lanterna.graphics.TextGraphics;
+import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
@@ -28,6 +30,7 @@ public class TerminalGame {
     private Update update;
     private Render render;
     private Handler handler;
+    private ActionBinding actionBinding;
 
     public TerminalGame(final String title, final int columns, final int rows) {
         this.title = title;
@@ -45,8 +48,9 @@ public class TerminalGame {
         return this;
     }
 
-    public TerminalGame handler(final Handler handler) {
+    public TerminalGame handler(final Handler handler, final ActionBinding actionBinding) {
         this.handler = handler;
+        this.actionBinding = actionBinding;
         return this;
     }
 
@@ -74,7 +78,7 @@ public class TerminalGame {
         }
     }
 
-    private void clearScreen(final Terminal terminal) {
+    private void clearScreen() {
         try {
             terminal.clearScreen();
         } catch (final IOException exception) {
@@ -82,7 +86,7 @@ public class TerminalGame {
         }
     }
 
-    private void flush(final Terminal terminal) {
+    private void flush() {
         try {
             terminal.flush();
         } catch (final IOException exception) {
@@ -104,18 +108,44 @@ public class TerminalGame {
                     && frameTime(currentTime[0]) < (1f / fpsLimit)) {
                 sleep();
             }
+            handleInput();
             final float elapsed = frameTime(currentTime[0]);
-            if (update != null) {
-                update.update(elapsed);
-            }
-            clearScreen(terminal);
-            if (render != null) {
-                render.render(textGraphics);
-            }
-            flush(terminal);
+            update(elapsed);
+            clearScreen();
+            render(textGraphics);
+            flush();
             currentTime[0] = System.currentTimeMillis();
         });
         timer.start();
+    }
+
+    private void handleInput() {
+        if (handler == null || actionBinding == null) {
+            return;
+        }
+        try {
+            KeyStroke keyStroke;
+            while ((keyStroke = terminal.pollInput()) != null) {
+                actionBinding.resolve(keyStroke) //
+                        .ifPresent(this::dispatch);
+            }
+        } catch (final IOException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private void update(final float elapsed) {
+        if (update == null) {
+            return;
+        }
+        update.update(elapsed);
+    }
+
+    private void render(final TextGraphics textGraphics) {
+        if (render == null) {
+            return;
+        }
+        render.render(textGraphics);
     }
 
     private void dispatch(final Event event) {
