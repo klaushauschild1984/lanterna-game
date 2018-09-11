@@ -152,7 +152,7 @@ public class TerminalGame {
         if (handler == null) {
             return;
         }
-        handler.handle(event);
+        handler.handle(this, event);
     }
 
     private Terminal initializeTerminal() throws Exception {

@@ -27,9 +27,9 @@ public enum TextImageIO {
 
     ;
 
-    private static final String GLYPHS = "glyphs.txt";
-    private static final String FOREGROUND = "foreground.png";
-    private static final String BACKGROUND = "background.png";
+    public static final String GLYPHS = "glyphs.txt";
+    public static final String FOREGROUND = "foreground.png";
+    public static final String BACKGROUND = "background.png";
 
     public static TextImage read(final File textImageFile) throws IOException {
         if (textImageFile.isDirectory()) {
@@ -84,7 +84,7 @@ public enum TextImageIO {
             final String line = glyphs.get(row);
             for (int column = 0; column < textImage.getSize().getColumns(); column++) {
                 final char glyph;
-                if (column > line.length()) {
+                if (column >= line.length()) {
                     glyph = ' ';
                 } else {
                     glyph = line.charAt(column);
