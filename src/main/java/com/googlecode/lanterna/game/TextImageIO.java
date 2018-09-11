@@ -58,13 +58,17 @@ public enum TextImageIO {
             final BufferedInputStream glyphsStream = new BufferedInputStream(
                     new FileInputStream(new File(textImageFile, GLYPHS)));
             final List<String> glyphs = readGlyphs(glyphsStream);
-            final BufferedImage foreground = readImage(new BufferedInputStream(
-                    new FileInputStream(new File(textImageFile, FOREGROUND))));
-            final BufferedImage background = readImage(new BufferedInputStream(
-                    new FileInputStream(new File(textImageFile, BACKGROUND))));
+            glyphsStream.close();
+            final BufferedInputStream foregroundStream = new BufferedInputStream(
+                    new FileInputStream(new File(textImageFile, FOREGROUND)));
+            final BufferedImage foreground = readImage(foregroundStream);
+            foregroundStream.close();
+            final BufferedInputStream backgroundStream = new BufferedInputStream(
+                    new FileInputStream(new File(textImageFile, BACKGROUND)));
+            final BufferedImage background = readImage(backgroundStream);
+            backgroundStream.close();
             return read(glyphs, foreground, background);
         }
-
         // read from zip archive
         return read(new BufferedInputStream(new FileInputStream(textImageFile)));
     }
@@ -131,25 +135,22 @@ public enum TextImageIO {
     }
 
     private static TextImage read(final List<String> glyphs, final BufferedImage foreground,
-                                  final BufferedImage background) throws IOException {
+                                  final BufferedImage background) {
         final TerminalSize imageSize = getImageSize(glyphs);
         final TextImage textImage = new BasicTextImage(imageSize);
         fillImage(textImage, glyphs, foreground, background);
         return textImage;
     }
 
-    private static List<String> readGlyphs(final InputStream glyphStream) throws IOException {
-        try (final BufferedReader reader = new BufferedReader(
-                new InputStreamReader(glyphStream, StandardCharsets.UTF_8))) {
-            return reader.lines() //
-                    .collect(Collectors.toList());
-        }
+    private static List<String> readGlyphs(final InputStream glyphStream) {
+        final BufferedReader reader = new BufferedReader(
+                new InputStreamReader(glyphStream, StandardCharsets.UTF_8));
+        return reader.lines() //
+                .collect(Collectors.toList());
     }
 
     private static BufferedImage readImage(final InputStream imageStream) throws IOException {
-        final BufferedImage image = ImageIO.read(imageStream);
-        imageStream.close();
-        return image;
+        return ImageIO.read(imageStream);
     }
 
 }
