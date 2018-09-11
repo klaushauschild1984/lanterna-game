@@ -1,15 +1,19 @@
 package com.googlecode.lanterna.game;
 
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.game.event.Event;
+import com.googlecode.lanterna.game.event.GameEvent;
+import com.googlecode.lanterna.game.event.Handler;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 
-import javax.swing.JFrame;
 import javax.swing.Timer;
 import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 public class TerminalGame {
@@ -23,6 +27,7 @@ public class TerminalGame {
 
     private Update update;
     private Render render;
+    private Handler handler;
 
     public TerminalGame(final String title, final int columns, final int rows) {
         this.title = title;
@@ -40,20 +45,30 @@ public class TerminalGame {
         return this;
     }
 
+    public TerminalGame handler(final Handler handler) {
+        this.handler = handler;
+        return this;
+    }
+
     public void launch() {
         try {
             Thread.currentThread().setName(title);
             terminal = initializeTerminal();
+            dispatch(GameEvent.INITIALIZE);
             gameLoop();
         } catch (final Exception exception) {
             throw new RuntimeException(exception);
         }
     }
 
-    public void finish() {
+    public void finish(final boolean exitVm) {
         try {
             timer.stop();
+            dispatch(GameEvent.FINALIZE);
             terminal.close();
+            if (exitVm) {
+                System.exit(0);
+            }
         } catch (final IOException exception) {
             throw new RuntimeException(exception);
         }
@@ -103,6 +118,13 @@ public class TerminalGame {
         timer.start();
     }
 
+    private void dispatch(final Event event) {
+        if (handler == null) {
+            return;
+        }
+        handler.handle(event);
+    }
+
     private Terminal initializeTerminal() throws Exception {
         final Font font = new Font("DejaVu Sans Mono", Font.BOLD, 28);
 
@@ -115,10 +137,17 @@ public class TerminalGame {
         terminal.setCursorVisible(false);
         if (terminal instanceof SwingTerminalFrame) {
             final SwingTerminalFrame swingTerminal = (SwingTerminalFrame) terminal;
-            swingTerminal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             swingTerminal.setResizable(false);
             swingTerminal.setLocationRelativeTo(null);
             swingTerminal.setAlwaysOnTop(true);
+            swingTerminal.addWindowListener(new WindowAdapter() {
+
+                @Override
+                public void windowClosing(final WindowEvent event) {
+                    finish(true);
+                }
+
+            });
         }
         return terminal;
     }

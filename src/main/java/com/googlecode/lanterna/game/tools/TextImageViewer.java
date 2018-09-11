@@ -34,7 +34,7 @@ public class TextImageViewer {
         while (true) {
             final WatchKey watchKey = watcher.take();
             if (!watchKey.pollEvents().isEmpty()) {
-                terminalGame.finish();
+                terminalGame.finish(false);
                 terminalGame = launchViewer(file);
             }
             watchKey.reset();
