@@ -19,6 +19,10 @@ package com.googlecode.lanterna.game;
 
 import com.googlecode.lanterna.graphics.TextGraphics;
 
+/**
+ * @author Klaus Hauschild
+ * @since 3.0.1
+ */
 @FunctionalInterface
 public interface Render {
 

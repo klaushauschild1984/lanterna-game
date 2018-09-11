@@ -23,6 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * @author Klaus Hauschild
+ * @since 3.0.1
+ */
 public class ActionBinding {
 
     private final Map<KeyStroke, Action> actions = new HashMap<>();

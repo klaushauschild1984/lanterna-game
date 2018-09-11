@@ -40,6 +40,10 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+/**
+ * @author Klaus Hauschild
+ * @since 3.0.1
+ */
 public enum TextImageIO {
 
     ;

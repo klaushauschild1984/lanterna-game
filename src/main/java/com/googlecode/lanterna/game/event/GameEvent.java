@@ -17,6 +17,10 @@
 
 package com.googlecode.lanterna.game.event;
 
+/**
+ * @author Klaus Hauschild
+ * @since 3.0.1
+ */
 public enum GameEvent implements Event {
 
     INITIALIZE,

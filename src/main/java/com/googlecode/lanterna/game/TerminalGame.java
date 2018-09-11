@@ -35,6 +35,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
+/**
+ * @author Klaus Hauschild
+ * @since 3.0.1
+ */
 public class TerminalGame {
 
     private final int columns;

@@ -38,6 +38,10 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
+/**
+ * @author Klaus Hauschild
+ * @since 3.0.1
+ */
 public class TextImageViewer {
 
     public static void main(final String[] args) throws Exception {

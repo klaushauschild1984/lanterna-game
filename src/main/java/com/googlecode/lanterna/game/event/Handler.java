@@ -19,6 +19,10 @@ package com.googlecode.lanterna.game.event;
 
 import com.googlecode.lanterna.game.TerminalGame;
 
+/**
+ * @author Klaus Hauschild
+ * @since 3.0.1
+ */
 public interface Handler {
 
     void handle(TerminalGame terminalGame, Event event);

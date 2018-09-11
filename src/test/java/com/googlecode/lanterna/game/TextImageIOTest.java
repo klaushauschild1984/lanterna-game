@@ -17,19 +17,25 @@
 
 package com.googlecode.lanterna.game;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import com.googlecode.lanterna.graphics.TextImage;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.IOException;
-import org.junit.Test;
-import com.googlecode.lanterna.graphics.TextImage;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+/**
+ * @author Klaus Hauschild
+ * @since 3.0.1
+ */
 public class TextImageIOTest {
 
     @Test
     public void readTest() throws IOException {
         final TextImage textImage = TextImageIO
-                        .read(new File("src/test/resources/com/googlecode/lanterna/game/image"));
+                .read(new File("src/test/resources/com/googlecode/lanterna/game/image"));
         assertThat(textImage.getSize().getColumns(), is(2));
         assertThat(textImage.getSize().getRows(), is(4));
     }

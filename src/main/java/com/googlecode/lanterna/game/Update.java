@@ -17,6 +17,10 @@
 
 package com.googlecode.lanterna.game;
 
+/**
+ * @author Klaus Hauschild
+ * @since 3.0.1
+ */
 @FunctionalInterface
 public interface Update {
 
