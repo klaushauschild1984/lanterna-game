@@ -90,5 +90,36 @@
 
     <!-- More Project Information -->
     <name>Lanterna Game</name>
+    <url>https://github.com/klaushauschild1984/lanterna-game</url>
+    <inceptionYear>2018</inceptionYear>
+    <licenses>
+        <license>
+            <name>GNU GENERAL PUBLIC LICENSE</name>
+            <url>https://github.com/klaushauschild1984/lanterna-game/blob/master/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>klaus.hauschild.1984@gmail.com</id>
+            <email>klaus.hauschild.1984@gmail.com</email>
+            <name>Klaus Hauschild</name>
+        </developer>
+    </developers>
+
+    <!-- Environment Settings -->
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/klaushauschild1984/lanterna-game/issues</url>
+    </issueManagement>
+    <!--<ciManagement>-->
+        <!--<system>TravisCI</system>-->
+        <!--<url></url>-->
+    <!--</ciManagement>-->
+    <scm>
+        <connection>scm:git:https://github.com/klaushauschild1984/lanterna-game.git</connection>
+        <developerConnection>scm:git:https://github.com/klaushauschild1984/lanterna-game.git</developerConnection>
+        <url>https://github.com/klaushauschild1984/lanterna-game</url>
+    </scm>
 
 </project>
