@@ -1,7 +1,9 @@
 package com.googlecode.lanterna.game.event;
 
+import com.googlecode.lanterna.game.TerminalGame;
+
 public interface Handler {
 
-    void handle(Event event);
+    void handle(TerminalGame terminalGame, Event event);
 
 }
