@@ -19,7 +19,7 @@ package com.googlecode.lanterna.game.tools;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.game.TerminalGame;
-import com.googlecode.lanterna.game.TextImageIO;
+import com.googlecode.lanterna.game.image.TextImageIO;
 import com.googlecode.lanterna.game.event.ActionBinding;
 import com.googlecode.lanterna.graphics.TextImage;
 import com.googlecode.lanterna.input.KeyStroke;

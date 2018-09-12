@@ -17,7 +17,7 @@
 
 package com.googlecode.lanterna.game.tools;
 
-import com.googlecode.lanterna.game.TextImageIO;
+import com.googlecode.lanterna.game.image.TextImageIO;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

@@ -15,30 +15,19 @@
  * along with Lanterna Game.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.googlecode.lanterna.game;
+package com.googlecode.lanterna.game.image;
 
-import com.googlecode.lanterna.game.image.TextImageIO;
-import com.googlecode.lanterna.graphics.TextImage;
-import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.TextColor;
 
 /**
  * @author Klaus Hauschild
  * @since 3.0.1
  */
-public class TextImageIOTest {
+public class TransparentTextCharacter extends TextCharacter {
 
-    @Test
-    public void readTest() throws IOException {
-        final TextImage textImage = TextImageIO
-                .read(new File("src/test/resources/com/googlecode/lanterna/game/image"));
-        assertThat(textImage.getSize().getColumns(), is(2));
-        assertThat(textImage.getSize().getRows(), is(4));
+    public TransparentTextCharacter(final char character, final TextColor foregroundColor) {
+        super(character, foregroundColor, TextColor.ANSI.DEFAULT);
     }
 
 }

@@ -15,9 +15,27 @@
  * along with Lanterna Game.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.googlecode.lanterna.game;
+/*
+ * This file is part of Lanterna Game.
+ *
+ * Lanterna Game is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Lanterna Game is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Lanterna Game.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.googlecode.lanterna.game.image;
 
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor.RGB;
 import com.googlecode.lanterna.graphics.BasicTextImage;
 import com.googlecode.lanterna.graphics.TextGraphics;
@@ -103,7 +121,7 @@ public enum TextImageIO {
     }
 
     private static void fillImage(final TextImage textImage, final List<String> glyphs,
-                                  final BufferedImage foreground, final BufferedImage background) {
+                                  final BufferedImage foregroundImage, final BufferedImage backgroundImage) {
         final TextGraphics textGraphics = textImage.newTextGraphics();
         for (int row = 0; row < textImage.getSize().getRows(); row++) {
             final String line = glyphs.get(row);
@@ -114,15 +132,24 @@ public enum TextImageIO {
                 } else {
                     glyph = line.charAt(column);
                 }
-                textGraphics.setForegroundColor(toRGB(foreground, column, row));
-                textGraphics.setBackgroundColor(toRGB(background, column, row));
-                textGraphics.putString(column, row, "" + glyph);
+                final RGB foreground = toRGB(foregroundImage, column, row);
+                final RGB background = toRGB(backgroundImage, column, row);
+                final TextCharacter character;
+                if (background != null) {
+                    character = new TextCharacter(glyph, foreground, background);
+                } else {
+                    character = new TransparentTextCharacter(glyph, foreground);
+                }
+                textGraphics.setCharacter(column, row, character);
             }
         }
     }
 
     private static RGB toRGB(final BufferedImage image, final int column, final int row) {
-        final Color color = new Color(image.getRGB(column, row));
+        final Color color = new Color(image.getRGB(column, row), true);
+        if (color.getAlpha() == 0) {
+            return null;
+        }
         return new RGB(color.getRed(), color.getGreen(), color.getBlue());
     }
 
@@ -137,7 +164,7 @@ public enum TextImageIO {
     private static TextImage read(final List<String> glyphs, final BufferedImage foreground,
                                   final BufferedImage background) {
         final TerminalSize imageSize = getImageSize(glyphs);
-        final TextImage textImage = new BasicTextImage(imageSize);
+        final TextImage textImage = new TransparentTextImage(imageSize);
         fillImage(textImage, glyphs, foreground, background);
         return textImage;
     }
