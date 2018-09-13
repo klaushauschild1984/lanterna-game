@@ -2,7 +2,7 @@
   "states": [
     {
       "name": "imageState",
-      "image": "image.zip",
+      "image": "image/",
     },
     {
       "name": "animationState",

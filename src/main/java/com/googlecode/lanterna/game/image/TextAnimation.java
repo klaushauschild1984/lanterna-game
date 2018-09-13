@@ -23,14 +23,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.core.io.Resource;
 import com.google.gson.Gson;
+import com.googlecode.lanterna.game.Render;
 import com.googlecode.lanterna.game.Update;
+import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.graphics.TextImage;
 
 /**
  * @author Klaus Hauschild
  * @since 3.0.1
  */
-public class TextAnimation implements Update {
+public class TextAnimation implements Update, Render {
 
     private static final Gson GSON = new Gson();
 
@@ -118,6 +120,11 @@ public class TextAnimation implements Update {
         }
     }
 
+    @Override
+    public void render(final TextGraphics textGraphics) {
+        // TODO implement me
+    }
+
     public enum Type {
 
         FORWARD,
@@ -138,8 +145,8 @@ public class TextAnimation implements Update {
 
     private static class Frame extends SimpleEntry<TextImage, Float> {
 
-        private Frame(final TextImage key, final Float value) {
-            super(key, value);
+        private Frame(final TextImage image, final Float time) {
+            super(image, time);
         }
 
     }
