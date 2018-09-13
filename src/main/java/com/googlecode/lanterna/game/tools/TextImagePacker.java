@@ -1,23 +1,18 @@
 /*
  * This file is part of Lanterna Game.
  *
- * Lanterna Game is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Lanterna Game is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * Lanterna Game is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Lanterna Game is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Lanterna Game.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with Lanterna Game. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 package com.googlecode.lanterna.game.tools;
-
-import com.googlecode.lanterna.game.image.TextImageIO;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -28,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import com.googlecode.lanterna.game.image.TextImageIO;
 
 /**
  * @author Klaus Hauschild
@@ -44,8 +41,10 @@ public class TextImagePacker {
     }
 
     public static File pack(final File textImageDirectory) throws IOException {
-        final File textImageFile = new File(textImageDirectory.getParent(), textImageDirectory.getName() + ".zip");
-        try (final ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(textImageFile)))) {
+        final File textImageFile = new File(textImageDirectory.getParent(),
+                        textImageDirectory.getName() + ".zip");
+        try (final ZipOutputStream zipOutputStream = new ZipOutputStream(
+                        new BufferedOutputStream(new FileOutputStream(textImageFile)))) {
             copy(textImageDirectory, TextImageIO.GLYPHS, zipOutputStream);
             copy(textImageDirectory, TextImageIO.FOREGROUND, zipOutputStream);
             copy(textImageDirectory, TextImageIO.BACKGROUND, zipOutputStream);
@@ -66,7 +65,8 @@ public class TextImagePacker {
         }
     }
 
-    private static void copy(final File textImageDirectory, final String name, final ZipOutputStream zipOutputStream) throws IOException {
+    private static void copy(final File textImageDirectory, final String name,
+                    final ZipOutputStream zipOutputStream) throws IOException {
         final ZipEntry zipEntry = new ZipEntry(name);
         zipOutputStream.putNextEntry(zipEntry);
         Files.copy(new File(textImageDirectory, name).toPath(), zipOutputStream);

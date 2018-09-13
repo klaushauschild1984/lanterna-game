@@ -1,21 +1,25 @@
 /*
  * This file is part of Lanterna Game.
  *
- * Lanterna Game is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Lanterna Game is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * Lanterna Game is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Lanterna Game is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Lanterna Game.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with Lanterna Game. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 package com.googlecode.lanterna.game;
+
+import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+
+import javax.swing.Timer;
 
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.game.event.ActionBinding;
@@ -29,12 +33,6 @@ import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
-
-import javax.swing.Timer;
-import java.awt.Font;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
 
 /**
  * @author Klaus Hauschild
@@ -132,14 +130,13 @@ public class TerminalGame {
         return (System.currentTimeMillis() - currentTime) / 1000f;
     }
 
-    private void gameLoop()
-            throws IOException {
+    private void gameLoop() throws IOException {
         final Integer fpsLimit = 60;
         final long[] currentTime = {System.currentTimeMillis()};
         final TextGraphics textGraphics = terminal.newTextGraphics();
         timer = new Timer(-1, event -> {
             while (fpsLimit != null && fpsLimit > 0
-                    && frameTime(currentTime[0]) < (1f / fpsLimit)) {
+                            && frameTime(currentTime[0]) < (1f / fpsLimit)) {
                 sleep();
             }
             handleInput();
@@ -161,7 +158,7 @@ public class TerminalGame {
             KeyStroke keyStroke;
             while ((keyStroke = terminal.pollInput()) != null) {
                 actionBinding.resolve(keyStroke) //
-                        .ifPresent(this::dispatch);
+                                .ifPresent(this::dispatch);
             }
         } catch (final IOException exception) {
             throw new RuntimeException(exception);
@@ -200,11 +197,11 @@ public class TerminalGame {
         }
 
         final Terminal terminal = new DefaultTerminalFactory() //
-                .setInitialTerminalSize(new TerminalSize(columns, rows)) //
-                .setTerminalEmulatorTitle(title) //
-                .setTerminalEmulatorFontConfiguration(
-                        SwingTerminalFontConfiguration.newInstance(font)) //
-                .createTerminal();
+                        .setInitialTerminalSize(new TerminalSize(columns, rows)) //
+                        .setTerminalEmulatorTitle(title) //
+                        .setTerminalEmulatorFontConfiguration(
+                                        SwingTerminalFontConfiguration.newInstance(font)) //
+                        .createTerminal();
         terminal.setCursorVisible(false);
         if (terminal instanceof SwingTerminalFrame) {
             final SwingTerminalFrame swingTerminal = (SwingTerminalFrame) terminal;

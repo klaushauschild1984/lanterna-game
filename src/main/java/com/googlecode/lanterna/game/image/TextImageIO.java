@@ -1,47 +1,33 @@
 /*
  * This file is part of Lanterna Game.
  *
- * Lanterna Game is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Lanterna Game is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * Lanterna Game is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Lanterna Game is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Lanterna Game.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with Lanterna Game. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 /*
  * This file is part of Lanterna Game.
  *
- * Lanterna Game is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Lanterna Game is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * Lanterna Game is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Lanterna Game is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with Lanterna Game.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with Lanterna Game. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 package com.googlecode.lanterna.game.image;
 
-import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.TextColor.RGB;
-import com.googlecode.lanterna.graphics.BasicTextImage;
-import com.googlecode.lanterna.graphics.TextGraphics;
-import com.googlecode.lanterna.graphics.TextImage;
-
-import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -57,6 +43,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import javax.imageio.ImageIO;
+
+import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.TextColor.RGB;
+import com.googlecode.lanterna.graphics.TextGraphics;
+import com.googlecode.lanterna.graphics.TextImage;
 
 /**
  * @author Klaus Hauschild
@@ -74,15 +68,15 @@ public enum TextImageIO {
         if (textImageFile.isDirectory()) {
             // read from directory
             final BufferedInputStream glyphsStream = new BufferedInputStream(
-                    new FileInputStream(new File(textImageFile, GLYPHS)));
+                            new FileInputStream(new File(textImageFile, GLYPHS)));
             final List<String> glyphs = readGlyphs(glyphsStream);
             glyphsStream.close();
             final BufferedInputStream foregroundStream = new BufferedInputStream(
-                    new FileInputStream(new File(textImageFile, FOREGROUND)));
+                            new FileInputStream(new File(textImageFile, FOREGROUND)));
             final BufferedImage foreground = readImage(foregroundStream);
             foregroundStream.close();
             final BufferedInputStream backgroundStream = new BufferedInputStream(
-                    new FileInputStream(new File(textImageFile, BACKGROUND)));
+                            new FileInputStream(new File(textImageFile, BACKGROUND)));
             final BufferedImage background = readImage(backgroundStream);
             backgroundStream.close();
             return read(glyphs, foreground, background);
@@ -121,7 +115,7 @@ public enum TextImageIO {
     }
 
     private static void fillImage(final TextImage textImage, final List<String> glyphs,
-                                  final BufferedImage foregroundImage, final BufferedImage backgroundImage) {
+                    final BufferedImage foregroundImage, final BufferedImage backgroundImage) {
         final TextGraphics textGraphics = textImage.newTextGraphics();
         for (int row = 0; row < textImage.getSize().getRows(); row++) {
             final String line = glyphs.get(row);
@@ -155,14 +149,14 @@ public enum TextImageIO {
 
     private static TerminalSize getImageSize(final List<String> lines) {
         final int columns = lines.stream() //
-                .map(String::length) //
-                .max(Comparator.naturalOrder()).get();
+                        .map(String::length) //
+                        .max(Comparator.naturalOrder()).get();
         final int rows = lines.size();
         return new TerminalSize(columns, rows);
     }
 
     private static TextImage read(final List<String> glyphs, final BufferedImage foreground,
-                                  final BufferedImage background) {
+                    final BufferedImage background) {
         final TerminalSize imageSize = getImageSize(glyphs);
         final TextImage textImage = new TransparentTextImage(imageSize);
         fillImage(textImage, glyphs, foreground, background);
@@ -171,9 +165,9 @@ public enum TextImageIO {
 
     private static List<String> readGlyphs(final InputStream glyphStream) {
         final BufferedReader reader = new BufferedReader(
-                new InputStreamReader(glyphStream, StandardCharsets.UTF_8));
+                        new InputStreamReader(glyphStream, StandardCharsets.UTF_8));
         return reader.lines() //
-                .collect(Collectors.toList());
+                        .collect(Collectors.toList());
     }
 
     private static BufferedImage readImage(final InputStream imageStream) throws IOException {
