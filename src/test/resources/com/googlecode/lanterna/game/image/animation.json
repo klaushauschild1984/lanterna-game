@@ -1,8 +1,9 @@
 {
   "frames": [
     {
-      "image": "image.zip",
+      "image": "image/",
       "time": 1
     }
-  ]
+  ],
+  "type": "loop"
 }

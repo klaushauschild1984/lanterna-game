@@ -32,8 +32,6 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,9 +41,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import javax.imageio.ImageIO;
-
+import org.springframework.core.io.Resource;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor.RGB;
@@ -64,28 +61,32 @@ public enum TextImageIO {
     public static final String FOREGROUND = "foreground.png";
     public static final String BACKGROUND = "background.png";
 
-    public static TextImage read(final File textImageFile) throws IOException {
-        if (textImageFile.isDirectory()) {
-            // read from directory
-            final BufferedInputStream glyphsStream = new BufferedInputStream(
-                            new FileInputStream(new File(textImageFile, GLYPHS)));
-            final List<String> glyphs = readGlyphs(glyphsStream);
-            glyphsStream.close();
-            final BufferedInputStream foregroundStream = new BufferedInputStream(
-                            new FileInputStream(new File(textImageFile, FOREGROUND)));
-            final BufferedImage foreground = readImage(foregroundStream);
-            foregroundStream.close();
-            final BufferedInputStream backgroundStream = new BufferedInputStream(
-                            new FileInputStream(new File(textImageFile, BACKGROUND)));
-            final BufferedImage background = readImage(backgroundStream);
-            backgroundStream.close();
-            return read(glyphs, foreground, background);
+    public static TextImage read(final Resource textImageResource) {
+        try {
+            if (textImageResource.getFile().isDirectory()) {
+                // read from directory
+                final BufferedInputStream glyphsStream = new BufferedInputStream(
+                                textImageResource.createRelative(GLYPHS).getInputStream());
+                final List<String> glyphs = readGlyphs(glyphsStream);
+                glyphsStream.close();
+                final BufferedInputStream foregroundStream = new BufferedInputStream(
+                                textImageResource.createRelative(FOREGROUND).getInputStream());
+                final BufferedImage foreground = readImage(foregroundStream);
+                foregroundStream.close();
+                final BufferedInputStream backgroundStream = new BufferedInputStream(
+                                textImageResource.createRelative(BACKGROUND).getInputStream());
+                final BufferedImage background = readImage(backgroundStream);
+                backgroundStream.close();
+                return read(glyphs, foreground, background);
+            }
+            // read from archive
+            return read(new BufferedInputStream(textImageResource.getInputStream()));
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
         }
-        // read from zip archive
-        return read(new BufferedInputStream(new FileInputStream(textImageFile)));
     }
 
-    public static TextImage read(final InputStream textImageArchiveStream) throws IOException {
+    private static TextImage read(final InputStream textImageArchiveStream) throws IOException {
         List<String> glyphs = null;
         BufferedImage foreground = null;
         BufferedImage background = null;

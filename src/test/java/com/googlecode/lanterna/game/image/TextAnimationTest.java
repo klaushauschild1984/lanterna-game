@@ -12,22 +12,21 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package com.googlecode.lanterna.game.tools;
-
-import java.io.File;
-import java.io.IOException;
+package com.googlecode.lanterna.game.image;
 
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * @author Klaus Hauschild
  * @since 3.0.1
  */
-public class TextImagePackerTest {
+public class TextAnimationTest {
 
     @Test
-    public void packTest() throws IOException {
-        TextImagePacker.pack(new File("target/test-classes/com/googlecode/lanterna/game/image/image"));
+    public void readTest() {
+        final TextAnimation textAnimation =
+                        TextAnimation.read(new ClassPathResource("animation.json", getClass()));
     }
 
 }

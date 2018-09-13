@@ -1,0 +1,12 @@
+{
+  "states": [
+    {
+      "name": "imageState",
+      "image": "image.zip",
+    },
+    {
+      "name": "animationState",
+      "animation": "animation.json",
+    }
+  ]
+}

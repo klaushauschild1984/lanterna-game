@@ -25,9 +25,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-
 import javax.imageio.ImageIO;
-
+import org.springframework.core.io.FileSystemResource;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.game.TerminalGame;
 import com.googlecode.lanterna.game.event.ActionBinding;
@@ -82,7 +81,7 @@ public class TextImageViewer {
     }
 
     private static TerminalGame launchViewer(final File file) throws IOException {
-        final TextImage textImage = TextImageIO.read(file);
+        final TextImage textImage = TextImageIO.read(new FileSystemResource(file));
         final TerminalGame terminalGame = new TerminalGame(file.getName(),
                         textImage.getSize().getColumns(), textImage.getSize().getRows()) //
                                         .render(textGraphics -> {
