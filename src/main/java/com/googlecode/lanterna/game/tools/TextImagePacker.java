@@ -32,7 +32,7 @@ import com.googlecode.lanterna.game.image.TextImageIO;
  */
 public class TextImagePacker {
 
-    public static void main(final String[] args) throws IOException {
+    public static void main(final String[] args) {
         if (args.length != 1) {
             throw new IllegalArgumentException("no directory");
         }
@@ -40,7 +40,7 @@ public class TextImagePacker {
         traverse(directory);
     }
 
-    public static File pack(final File textImageDirectory) throws IOException {
+    public static File pack(final File textImageDirectory) {
         final File textImageFile = new File(textImageDirectory.getParent(),
                         textImageDirectory.getName() + ".zip");
         try (final ZipOutputStream zipOutputStream = new ZipOutputStream(
@@ -49,10 +49,12 @@ public class TextImagePacker {
             copy(textImageDirectory, TextImageIO.FOREGROUND, zipOutputStream);
             copy(textImageDirectory, TextImageIO.BACKGROUND, zipOutputStream);
             return textImageFile;
+        } catch (final IOException exception) {
+            throw new RuntimeException(exception);
         }
     }
 
-    private static void traverse(final File directory) throws IOException {
+    private static void traverse(final File directory) {
         if (!directory.isDirectory()) {
             return;
         }
@@ -66,10 +68,14 @@ public class TextImagePacker {
     }
 
     private static void copy(final File textImageDirectory, final String name,
-                    final ZipOutputStream zipOutputStream) throws IOException {
-        final ZipEntry zipEntry = new ZipEntry(name);
-        zipOutputStream.putNextEntry(zipEntry);
-        Files.copy(new File(textImageDirectory, name).toPath(), zipOutputStream);
+                    final ZipOutputStream zipOutputStream) {
+        try {
+            final ZipEntry zipEntry = new ZipEntry(name);
+            zipOutputStream.putNextEntry(zipEntry);
+            Files.copy(new File(textImageDirectory, name).toPath(), zipOutputStream);
+        } catch (final IOException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     private static boolean isTextImageDirectory(final File textImageDirectory) {

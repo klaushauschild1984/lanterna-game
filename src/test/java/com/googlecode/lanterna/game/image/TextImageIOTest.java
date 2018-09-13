@@ -30,8 +30,10 @@ package com.googlecode.lanterna.game.image;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+
 import com.googlecode.lanterna.graphics.TextImage;
 
 /**

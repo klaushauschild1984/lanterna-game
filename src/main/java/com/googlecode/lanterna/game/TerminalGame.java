@@ -130,24 +130,28 @@ public class TerminalGame {
         return (System.currentTimeMillis() - currentTime) / 1000f;
     }
 
-    private void gameLoop() throws IOException {
-        final Integer fpsLimit = 60;
-        final long[] currentTime = {System.currentTimeMillis()};
-        final TextGraphics textGraphics = terminal.newTextGraphics();
-        timer = new Timer(-1, event -> {
-            while (fpsLimit != null && fpsLimit > 0
-                            && frameTime(currentTime[0]) < (1f / fpsLimit)) {
-                sleep();
-            }
-            handleInput();
-            final float elapsed = frameTime(currentTime[0]);
-            update(elapsed);
-            clearScreen();
-            render(textGraphics);
-            flush();
-            currentTime[0] = System.currentTimeMillis();
-        });
-        timer.start();
+    private void gameLoop() {
+        try {
+            final Integer fpsLimit = 60;
+            final long[] currentTime = {System.currentTimeMillis()};
+            final TextGraphics textGraphics = terminal.newTextGraphics();
+            timer = new Timer(-1, event -> {
+                while (fpsLimit != null && fpsLimit > 0
+                                && frameTime(currentTime[0]) < (1f / fpsLimit)) {
+                    sleep();
+                }
+                handleInput();
+                final float elapsed = frameTime(currentTime[0]);
+                update(elapsed);
+                clearScreen();
+                render(textGraphics);
+                flush();
+                currentTime[0] = System.currentTimeMillis();
+            });
+            timer.start();
+        } catch (final IOException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     private void handleInput() {
@@ -186,38 +190,43 @@ public class TerminalGame {
         handler.handle(this, event);
     }
 
-    private Terminal initializeTerminal() throws Exception {
-        if (font == null) {
-            font = new Font("DejaVu Sans Mono", Font.BOLD, fontSize);
-        } else {
-            font = font.deriveFont(Font.BOLD, fontSize);
-        }
-        if (AWTTerminalFontConfiguration.filterMonospaced(font).length != 1) {
-            throw new IllegalArgumentException(String.format("Font %s is not mono-spaced.", font));
-        }
+    private Terminal initializeTerminal() {
+        try {
+            if (font == null) {
+                font = new Font("DejaVu Sans Mono", Font.BOLD, fontSize);
+            } else {
+                font = font.deriveFont(Font.BOLD, fontSize);
+            }
+            if (AWTTerminalFontConfiguration.filterMonospaced(font).length != 1) {
+                throw new IllegalArgumentException(
+                                String.format("Font %s is not mono-spaced.", font));
+            }
 
-        final Terminal terminal = new DefaultTerminalFactory() //
-                        .setInitialTerminalSize(new TerminalSize(columns, rows)) //
-                        .setTerminalEmulatorTitle(title) //
-                        .setTerminalEmulatorFontConfiguration(
-                                        SwingTerminalFontConfiguration.newInstance(font)) //
-                        .createTerminal();
-        terminal.setCursorVisible(false);
-        if (terminal instanceof SwingTerminalFrame) {
-            final SwingTerminalFrame swingTerminal = (SwingTerminalFrame) terminal;
-            swingTerminal.setResizable(false);
-            swingTerminal.setLocationRelativeTo(null);
-            swingTerminal.setAlwaysOnTop(true);
-            swingTerminal.addWindowListener(new WindowAdapter() {
+            final Terminal terminal = new DefaultTerminalFactory() //
+                            .setInitialTerminalSize(new TerminalSize(columns, rows)) //
+                            .setTerminalEmulatorTitle(title) //
+                            .setTerminalEmulatorFontConfiguration(
+                                            SwingTerminalFontConfiguration.newInstance(font)) //
+                            .createTerminal();
+            terminal.setCursorVisible(false);
+            if (terminal instanceof SwingTerminalFrame) {
+                final SwingTerminalFrame swingTerminal = (SwingTerminalFrame) terminal;
+                swingTerminal.setResizable(false);
+                swingTerminal.setLocationRelativeTo(null);
+                swingTerminal.setAlwaysOnTop(true);
+                swingTerminal.addWindowListener(new WindowAdapter() {
 
-                @Override
-                public void windowClosing(final WindowEvent event) {
-                    finish(true);
-                }
+                    @Override
+                    public void windowClosing(final WindowEvent event) {
+                        finish(true);
+                    }
 
-            });
+                });
+            }
+            return terminal;
+        } catch (final IOException exception) {
+            throw new RuntimeException(exception);
         }
-        return terminal;
     }
 
     private void sleep() {

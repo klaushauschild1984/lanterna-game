@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.core.io.Resource;
+
 import com.google.gson.Gson;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.game.Render;

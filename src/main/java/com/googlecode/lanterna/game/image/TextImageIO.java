@@ -41,8 +41,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import javax.imageio.ImageIO;
+
 import org.springframework.core.io.Resource;
+
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor.RGB;
@@ -86,7 +89,7 @@ public enum TextImageIO {
         }
     }
 
-    private static TextImage read(final InputStream textImageArchiveStream) throws IOException {
+    private static TextImage read(final InputStream textImageArchiveStream) {
         List<String> glyphs = null;
         BufferedImage foreground = null;
         BufferedImage background = null;
@@ -110,6 +113,8 @@ public enum TextImageIO {
                         break;
                 }
             }
+        } catch (final IOException exception) {
+            throw new RuntimeException(exception);
         }
 
         return read(glyphs, foreground, background);
@@ -171,8 +176,12 @@ public enum TextImageIO {
                         .collect(Collectors.toList());
     }
 
-    private static BufferedImage readImage(final InputStream imageStream) throws IOException {
-        return ImageIO.read(imageStream);
+    private static BufferedImage readImage(final InputStream imageStream) {
+        try {
+            return ImageIO.read(imageStream);
+        } catch (final IOException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
 }

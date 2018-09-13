@@ -25,8 +25,11 @@ import java.nio.file.FileSystems;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+
 import javax.imageio.ImageIO;
+
 import org.springframework.core.io.FileSystemResource;
+
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.game.TerminalGame;
 import com.googlecode.lanterna.game.event.ActionBinding;
@@ -41,7 +44,7 @@ import com.googlecode.lanterna.input.KeyType;
  */
 public class TextImageViewer {
 
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) {
         if (args.length < 1) {
             throw new IllegalArgumentException("no file");
         }
@@ -65,22 +68,26 @@ public class TextImageViewer {
         }
     }
 
-    private static void loadImage(final File file) throws Exception {
-        TerminalGame terminalGame = launchViewer(file);
+    private static void loadImage(final File file) {
+        try {
+            TerminalGame terminalGame = launchViewer(file);
 
-        final WatchService watcher = FileSystems.getDefault().newWatchService();
-        file.toPath().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
-        while (true) {
-            final WatchKey watchKey = watcher.take();
-            if (!watchKey.pollEvents().isEmpty()) {
-                terminalGame.finish(false);
-                terminalGame = launchViewer(file);
+            final WatchService watcher = FileSystems.getDefault().newWatchService();
+            file.toPath().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
+            while (true) {
+                final WatchKey watchKey = watcher.take();
+                if (!watchKey.pollEvents().isEmpty()) {
+                    terminalGame.finish(false);
+                    terminalGame = launchViewer(file);
+                }
+                watchKey.reset();
             }
-            watchKey.reset();
+        } catch (final Exception exception) {
+            throw new RuntimeException(exception);
         }
     }
 
-    private static TerminalGame launchViewer(final File file) throws IOException {
+    private static TerminalGame launchViewer(final File file) {
         final TextImage textImage = TextImageIO.read(new FileSystemResource(file));
         final TerminalGame terminalGame = new TerminalGame(file.getName(),
                         textImage.getSize().getColumns(), textImage.getSize().getRows()) //
@@ -98,32 +105,35 @@ public class TextImageViewer {
         return terminalGame;
     }
 
-    private static void createImage(final File file, final int columns, final int rows)
-                    throws Exception {
-        file.mkdir();
-        try (final BufferedWriter writer =
-                        new BufferedWriter(new FileWriter(new File(file, TextImageIO.GLYPHS)))) {
-            final StringBuilder lineBuilder = new StringBuilder();
-            for (int column = 0; column < columns; column++) {
-                lineBuilder.append(" ");
-            }
-            for (int row = 0; row < rows; row++) {
-                if (row != 0) {
-                    writer.newLine();
+    private static void createImage(final File file, final int columns, final int rows) {
+        try {
+            file.mkdir();
+            try (final BufferedWriter writer = new BufferedWriter(
+                            new FileWriter(new File(file, TextImageIO.GLYPHS)))) {
+                final StringBuilder lineBuilder = new StringBuilder();
+                for (int column = 0; column < columns; column++) {
+                    lineBuilder.append(" ");
                 }
-                writer.write(lineBuilder.toString());
+                for (int row = 0; row < rows; row++) {
+                    if (row != 0) {
+                        writer.newLine();
+                    }
+                    writer.write(lineBuilder.toString());
+                }
             }
+            final BufferedImage bufferedImage =
+                            new BufferedImage(columns, rows, BufferedImage.TYPE_INT_RGB);
+            ImageIO.write(bufferedImage, "png", new File(file, TextImageIO.BACKGROUND));
+
+            final Graphics2D graphics = bufferedImage.createGraphics();
+            graphics.setColor(Color.LIGHT_GRAY);
+            graphics.fillRect(0, 0, columns, rows);
+            ImageIO.write(bufferedImage, "png", new File(file, TextImageIO.FOREGROUND));
+
+            loadImage(file);
+        } catch (final IOException exception) {
+            throw new RuntimeException(exception);
         }
-        final BufferedImage bufferedImage =
-                        new BufferedImage(columns, rows, BufferedImage.TYPE_INT_RGB);
-        ImageIO.write(bufferedImage, "png", new File(file, TextImageIO.BACKGROUND));
-
-        final Graphics2D graphics = bufferedImage.createGraphics();
-        graphics.setColor(Color.LIGHT_GRAY);
-        graphics.fillRect(0, 0, columns, rows);
-        ImageIO.write(bufferedImage, "png", new File(file, TextImageIO.FOREGROUND));
-
-        loadImage(file);
     }
 
     private enum Action implements com.googlecode.lanterna.game.event.Action {

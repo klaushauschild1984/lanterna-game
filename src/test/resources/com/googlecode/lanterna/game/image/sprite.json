@@ -2,11 +2,11 @@
   "states": [
     {
       "name": "imageState",
-      "image": "image/",
+      "image": "image/"
     },
     {
       "name": "animationState",
-      "animation": "animation.json",
+      "animation": "animation.json"
     }
   ]
 }

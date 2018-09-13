@@ -15,7 +15,6 @@
 package com.googlecode.lanterna.game.tools;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.junit.Test;
 
@@ -26,8 +25,9 @@ import org.junit.Test;
 public class TextImagePackerTest {
 
     @Test
-    public void packTest() throws IOException {
-        TextImagePacker.pack(new File("target/test-classes/com/googlecode/lanterna/game/image/image"));
+    public void packTest() {
+        TextImagePacker.pack(
+                        new File("target/test-classes/com/googlecode/lanterna/game/image/image"));
     }
 
 }
