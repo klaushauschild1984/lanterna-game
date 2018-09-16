@@ -14,18 +14,27 @@
 
 package com.googlecode.lanterna.game.event;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import java.util.function.Consumer;
+import org.junit.Test;
 
 /**
  * @author Klaus Hauschild
  * @since 3.0.1
  */
-public interface Event {
+public class EventTest {
 
-    default <T extends Event> void is(final T event, final Consumer<T> handler) {
-        if (this == event) {
-            handler.accept(event);
-        }
+    @Test
+    public void isTest() {
+        final Consumer initializeHandler = mock(Consumer.class);
+        final Consumer finalizeHandler = mock(Consumer.class);
+        GameEvent.INITIALIZE.is(GameEvent.INITIALIZE, initializeHandler);
+        GameEvent.INITIALIZE.is(GameEvent.FINALIZE, finalizeHandler);
+        verify(initializeHandler, times(1)).accept(GameEvent.INITIALIZE);
+        verifyNoMoreInteractions(finalizeHandler);
     }
 
 }

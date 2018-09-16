@@ -25,11 +25,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-
 import javax.imageio.ImageIO;
-
 import org.springframework.core.io.FileSystemResource;
-
+import org.springframework.core.io.Resource;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.game.TerminalGame;
 import com.googlecode.lanterna.game.event.ActionBinding;
@@ -44,13 +42,13 @@ import com.googlecode.lanterna.input.KeyType;
  */
 public class TextImageViewer {
 
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws IOException {
         if (args.length < 1) {
             throw new IllegalArgumentException("no file");
         }
-        final File file = new File(args[0]);
-        if (file.exists()) {
-            loadImage(file);
+        final Resource resource = new FileSystemResource(args[0]);
+        if (resource.exists()) {
+            loadImage(resource);
         } else {
             int columns = -1;
             int rows = -1;
@@ -64,21 +62,21 @@ public class TextImageViewer {
             if (columns == -1 || rows == -1) {
                 throw new IllegalArgumentException("no columns, nor rows");
             }
-            createImage(file, columns, rows);
+            createImage(resource.getFile(), columns, rows);
         }
     }
 
-    private static void loadImage(final File file) {
+    private static void loadImage(final Resource resource) {
         try {
-            TerminalGame terminalGame = launchViewer(file);
+            TerminalGame terminalGame = launchViewer(resource);
 
             final WatchService watcher = FileSystems.getDefault().newWatchService();
-            file.toPath().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
+            resource.getFile().toPath().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
             while (true) {
                 final WatchKey watchKey = watcher.take();
                 if (!watchKey.pollEvents().isEmpty()) {
                     terminalGame.finish(false);
-                    terminalGame = launchViewer(file);
+                    terminalGame = launchViewer(resource);
                 }
                 watchKey.reset();
             }
@@ -87,18 +85,17 @@ public class TextImageViewer {
         }
     }
 
-    private static TerminalGame launchViewer(final File file) {
-        final TextImage textImage = TextImageIO.read(new FileSystemResource(file));
-        final TerminalGame terminalGame = new TerminalGame(file.getName(),
+    private static TerminalGame launchViewer(final Resource resource) {
+        final TextImage textImage = TextImageIO.read(resource);
+        final TerminalGame terminalGame = new TerminalGame(resource.getFilename(),
                         textImage.getSize().getColumns(), textImage.getSize().getRows()) //
                                         .render(textGraphics -> {
                                             textGraphics.drawImage(new TerminalPosition(0, 0),
                                                             textImage);
                                         }) //
                                         .handler((game, event) -> {
-                                            if (event == Action.QUIT) {
-                                                game.finish(true);
-                                            }
+                                            event.is(Action.QUIT, //
+                                                            quit -> game.finish(true));
                                         }, new ActionBinding().bind(new KeyStroke(KeyType.Escape),
                                                         Action.QUIT));
         terminalGame.launch();
@@ -130,7 +127,7 @@ public class TextImageViewer {
             graphics.fillRect(0, 0, columns, rows);
             ImageIO.write(bufferedImage, "png", new File(file, TextImageIO.FOREGROUND));
 
-            loadImage(file);
+            loadImage(new FileSystemResource(file));
         } catch (final IOException exception) {
             throw new RuntimeException(exception);
         }
